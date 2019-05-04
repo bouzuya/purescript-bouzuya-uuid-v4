@@ -23,7 +23,6 @@ import Node.Buffer (Buffer, Octet, Offset)
 import Node.Buffer as Buffer
 import Node.Crypto as Crypto
 import Partial.Unsafe as Unsafe
-import Unsafe.Coerce as UnsafeCoerce
 
 newtype UUIDv4 = UUIDv4 (Array Octet)
 
@@ -71,7 +70,7 @@ fromString s
 
 generate :: Effect UUIDv4
 generate = do
-  bytes <- (UnsafeCoerce.unsafeCoerce Crypto.randomBytes) byteLength -- FIXME
+  bytes <- Crypto.randomBytes byteLength
   _ <- modify ((Bits.or 0x40) <<< (Bits.and 0x0f)) 6 bytes
   _ <- modify ((Bits.or 0x80) <<< (Bits.and 0x3f)) 8 bytes
   map UUIDv4 (Buffer.toArray bytes)
